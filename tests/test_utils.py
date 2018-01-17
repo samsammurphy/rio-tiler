@@ -402,6 +402,36 @@ def test_array_to_img_invalid_format():
         utils.array_to_img(arr, tileformat)
 
 
+def test_array_to_tif_valid():
+    """
+    Should work as expected
+    """
+
+    arr = np.random.randint(0, 255, size=(3, 512, 512), dtype=np.uint8)
+    bounds = (-78.75, 34.30714385628803, -75.93749999999999, 36.59788913307021)
+    assert utils.array_to_tif(arr, bounds)
+
+
+def test_array_to_tif_oneband():
+    """
+    Should work as expected
+    """
+
+    arr = np.random.randint(0, 255, size=(512, 512), dtype=np.uint8)
+    bounds = (-78.75, 34.30714385628803, -75.93749999999999, 36.59788913307021)
+    assert utils.array_to_tif(arr, bounds)
+
+
+def test_array_to_tif_nonodata():
+    """
+    Should work as expected
+    """
+
+    arr = np.random.randint(0, 255, size=(512, 512), dtype=np.uint8)
+    bounds = (-78.75, 34.30714385628803, -75.93749999999999, 36.59788913307021)
+    assert utils.array_to_tif(arr, bounds, nodata=None)
+
+
 @patch('rio_tiler.utils.urlopen')
 def test_landsat_get_mtl_valid(urlopen):
 

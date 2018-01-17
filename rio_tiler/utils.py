@@ -12,6 +12,8 @@ import numpy as np
 import mercantile
 
 import rasterio
+from rasterio import transform
+from rasterio.io import MemoryFile
 from rasterio.vrt import WarpedVRT
 from rasterio.enums import Resampling
 from rasterio.plot import reshape_as_image
@@ -453,6 +455,43 @@ def array_to_img(arr, tileformat='png', nodata=0, color_map=None):
     sio.seek(0)
 
     return base64.b64encode(sio.getvalue()).decode()
+
+
+def array_to_tif(arr, bounds, nodata=0):
+    """Convert an array to geotiff
+
+    Attributes
+    ----------
+    arr : numpy ndarray
+        Image array to encode.
+    bounds : list
+        WGS84 bounds (left, bottom, right, top).
+    nodata: int
+        No data value used to create mask
+
+    Returns
+    -------
+    out : str
+        base64 encoded PNG or JPEG image.
+    """
+
+    if len(arr.shape) == 2:
+        arr = np.expand_dims(arr, axis=0)
+
+    w, s, e, n = bounds
+    dst_transform = transform.from_bounds(w, s, e, n, arr.shape[1], arr.shape[2])
+
+    with MemoryFile() as memfile:
+        with memfile.open(driver='GTiff',
+                          count=arr.shape[0],
+                          dtype=arr.dtype,
+                          nodata=nodata,
+                          height=arr.shape[1],
+                          width=arr.shape[2],
+                          crs='epsg:3857',
+                          transform=dst_transform) as dst:
+            dst.write(arr)
+        return base64.b64encode(memfile.read()).decode()
 
 
 def get_colormap(name='cfastie'):

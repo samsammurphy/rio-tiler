@@ -15,7 +15,7 @@ def bounds(address):
     ----------
 
     address : str
-        file url.
+        file url or local path.
 
     Returns
     -------
@@ -27,7 +27,7 @@ def bounds(address):
         wgs_bounds = transform_bounds(
             *[src.crs, 'epsg:4326'] + list(src.bounds), densify_pts=21)
 
-    return {'url': address, 'bounds': list(wgs_bounds)}
+    return {'address': address, 'bounds': list(wgs_bounds)}
 
 
 def tile(address, tile_x, tile_y, tile_z, rgb=None, tilesize=256, nodata=None, alpha=None):
@@ -37,7 +37,7 @@ def tile(address, tile_x, tile_y, tile_z, rgb=None, tilesize=256, nodata=None, a
     ----------
 
     address : str
-        file url.
+        file url or local path.
     tile_x : int
         Mercator tile X index.
     tile_y : int
